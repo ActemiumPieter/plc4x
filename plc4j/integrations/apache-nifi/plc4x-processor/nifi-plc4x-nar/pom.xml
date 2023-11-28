@@ -38,17 +38,18 @@
 
 
 	<dependencies>
+
+    <dependency>
+      <groupId>org.apache.plc4x</groupId>
+      <artifactId>plc4j-nifi-plc4x-processors</artifactId>
+      <version>0.12.0-SNAPSHOT</version>
+    </dependency>
 <!--    <dependency>
       <groupId>org.apache.plc4x</groupId>
       <artifactId>plc4j-nifi-plc4x-controller-service-api-nar</artifactId>
       <version>0.12.0-SNAPSHOT</version>
       <type>nar</type>
     </dependency>-->
-    <dependency>
-      <groupId>org.apache.plc4x</groupId>
-      <artifactId>plc4j-nifi-plc4x-processors</artifactId>
-      <version>0.12.0-SNAPSHOT</version>
-    </dependency>
 
 
 		<!-- PLC4X -->
@@ -74,6 +75,11 @@
         <artifactId>nifi-nar-maven-plugin</artifactId>
         <version>1.5.1</version>
         <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.3.0</version>
       </plugin>
     </plugins>
   </build>

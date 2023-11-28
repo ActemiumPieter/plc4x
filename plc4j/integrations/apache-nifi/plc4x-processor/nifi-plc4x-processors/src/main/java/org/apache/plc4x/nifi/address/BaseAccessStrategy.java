@@ -92,7 +92,7 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
 
         @Override
         public ValidationResult validate(String subject, String input, ValidationContext context) {
-            String connectionString = context.getProperty(BasePlc4xProcessor.MY_SERVICE).getValue();
+            String connectionString = context.getProperty(BasePlc4xProcessor.PLC_CONNECTION_STRING).getValue();
 
             if (context.isExpressionLanguageSupported(subject) && context.isExpressionLanguagePresent(input) || 
                 context.isExpressionLanguagePresent(connectionString)) {

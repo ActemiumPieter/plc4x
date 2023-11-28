@@ -69,6 +69,8 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     protected List<PropertyDescriptor> properties;
     protected Set<Relationship> relationships;
     protected volatile boolean debugEnabled;
+
+    private volatile PLCConnectionService plcConnectionService;
     protected Integer cacheSize = 0;
 
     protected final SchemaCache schemaCache = new SchemaCache(0);
@@ -88,7 +90,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     }
 
 
-    public static final PropertyDescriptor MY_SERVICE = new PropertyDescriptor
+    public static final PropertyDescriptor PLC_CONNECTION_STRING = new PropertyDescriptor
         .Builder()
         .name("PLC Connection Service")
         .displayName("PLC Connection Service")
@@ -160,7 +162,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
         properties.add(PLC_SCHEMA_CACHE_SIZE);
         properties.add(REQUEST_TIMEOUT_IN_MILLISECONDS);
         properties.add(PLC_TIMESTAMP_FIELD_NAME);
-        properties.add(MY_SERVICE);
+        properties.add(PLC_CONNECTION_STRING);
         this.properties = Collections.unmodifiableList(properties);
 
     	
@@ -175,7 +177,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     }
     
     public String getConnectionString(ProcessContext context, FlowFile flowFile) {
-        return context.getProperty(MY_SERVICE).evaluateAttributeExpressions(flowFile).getValue();
+        return context.getProperty(PLC_CONNECTION_STRING).evaluateAttributeExpressions(flowFile).getValue();
     }
 
     public Long getTimeout(ProcessContext context, FlowFile flowFile) {
