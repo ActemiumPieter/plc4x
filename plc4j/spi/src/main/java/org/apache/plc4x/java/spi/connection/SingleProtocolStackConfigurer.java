@@ -27,7 +27,6 @@ import io.netty.handler.codec.MessageToMessageCodec;
 import org.apache.plc4x.java.api.authentication.PlcAuthentication;
 import org.apache.plc4x.java.api.exceptions.PlcRuntimeException;
 import org.apache.plc4x.java.api.listener.EventListener;
-import org.apache.plc4x.java.spi.EventListenerMessageCodec;
 import org.apache.plc4x.java.spi.Plc4xNettyWrapper;
 import org.apache.plc4x.java.spi.Plc4xProtocolBase;
 import org.apache.plc4x.java.spi.configuration.Configuration;
@@ -104,7 +103,7 @@ public class SingleProtocolStackConfigurer<BASE_PACKET_CLASS extends Message> im
     @Override
     public Plc4xProtocolBase<BASE_PACKET_CLASS> configurePipeline(Configuration configuration, ChannelPipeline pipeline,
                                                                   PlcAuthentication authentication, boolean passive,
-                                                                  List<EventListener> listeners) {
+                                                                  List<EventListener> ignore) {
         if (this.encryptionHandler != null) {
             pipeline.addLast(this.encryptionHandler);
         }
@@ -113,7 +112,6 @@ public class SingleProtocolStackConfigurer<BASE_PACKET_CLASS extends Message> im
         if (driverContextClass != null) {
             protocol.setDriverContext(configure(configuration, createInstance(driverContextClass)));
         }
-        pipeline.addLast(new EventListenerMessageCodec(listeners));
         Plc4xNettyWrapper<BASE_PACKET_CLASS> context = new Plc4xNettyWrapper<>(new NettyHashTimerTimeoutManager(), pipeline, passive, protocol,
             authentication, basePacketClass);
         pipeline.addLast(context);

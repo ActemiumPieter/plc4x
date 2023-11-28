@@ -745,7 +745,6 @@ public class SecureChannel {
     public void onDiscover(ConversationContext<OpcuaAPU> context) {
         if (!driverContext.getEncrypted()) {
             LOGGER.debug("not encrypted, ignoring onDiscover");
-            context.fireDiscovered(configuration);
             return;
         }
         // Only the TCP transport supports login.
