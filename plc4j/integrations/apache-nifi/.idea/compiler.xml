@@ -10,21 +10,30 @@
         <module name="plc4j-nifi-plc4x-controller-service-api" />
         <module name="plc4j-nifi-plc4x-processors" />
         <module name="plc4j-nifi-plc4x-controller-service-api-nar" />
-        <module name="plc4j-nifi-plc4x-nar" />
         <module name="plc4j-nifi-plc4x-controller-service" />
         <module name="plc4j-nifi-plc4x-controller-service-nar" />
+        <module name="plc4j-nifi-plc4x-nar" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="controller-test" target="11" />
+      <module name="controller-test-api" target="11" />
+      <module name="controller-test-api-nar" target="11" />
+      <module name="controller-test-nar" target="11" />
       <module name="nifi-plc4x" target="11" />
       <module name="nifi-plc4x-controller-service" target="11" />
       <module name="nifi-plc4x-controller-service-api" target="11" />
       <module name="nifi-plc4x-controller-service-api-nar" target="11" />
       <module name="nifi-plc4x-controller-service-nar" target="11" />
+      <module name="plc4j-apache-nifi (1)" target="11" />
+      <module name="plc4j-apache-nifi (2)" target="11" />
+      <module name="plc4j-apache-nifi (2) (org.apache.plc4x)" target="11" />
       <module name="plc4j-controller-service" target="11" />
       <module name="plc4j-nifi-plc4x-controller-service (1)" target="11" />
       <module name="plc4j-nifi-plc4x-controller-service (2)" target="11" />
       <module name="plc4j-nifi-plc4x-prosessor" target="11" />
+      <module name="plc4x-controller-test" target="11" />
+      <module name="plc4x-processor" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
