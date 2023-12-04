@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="72dc62b0-0370-4652-91e6-9dc0b7e85a64" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/apache-nifi/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api-nar/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api-nar/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api/src/main/java/org/apache/plc4x/PLCConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api/src/main/java/org/apache/plc4x/PLCConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-nar/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-nar/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service/src/main/java/org/apache/plc4x/PLCConnectionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service/src/main/java/org/apache/plc4x/PLCConnectionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-controller-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-nar/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/BasePlc4xProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/Plc4xListenRecordProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/Plc4xSinkProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/Plc4xSinkRecordProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/Plc4xSourceProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/Plc4xSourceRecordProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/address/AddressesAccessStrategy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/address/AddressesAccessUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/address/BaseAccessStrategy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/address/DynamicPropertyAccessStrategy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/address/FilePropertyAccessStrategy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/address/TextPropertyAccessStrategy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/record/Plc4xFullReadResponseRowCallback.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/record/Plc4xReadResponseRecordSet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/record/Plc4xReadResponseRowCallback.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/record/Plc4xWriter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/record/RecordPlc4xWriter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/record/SchemaCache.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/subscription/Plc4xListenerDispatcher.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/subscription/Plc4xSubscriptionType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java/org/apache/plc4x/nifi/util/Plc4xCommon.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/resources/META-INF/services/org.apache.nifi.processor.Processor" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/Plc4xListenRecordProcessorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/Plc4xSinkProcessorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/Plc4xSinkRecordProcessorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/Plc4xSourceProcessorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/Plc4xSourceRecordProcessorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/address/AccessStrategyTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/record/SchemaCacheTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/java/org/apache/plc4x/nifi/util/Plc4xCommonTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/test/resources/logback-test.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/plc4x-processor/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/plc4x-processor/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache-nifi/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/apache-nifi/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="2YqNJ6Esm4HQV9uXQiYWGlunp1b" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "develop",
+    "last_opened_file_path": "C:/Users/pieter.janssen/Desktop/plc4x/plc4j/integrations",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="integrations" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="integrations" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="72dc62b0-0370-4652-91e6-9dc0b7e85a64" name="Changes" comment="" />
+      <created>1701249076693</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1701249076693</updated>
+      <workItem from="1701249077689" duration="68000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

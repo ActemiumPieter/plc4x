@@ -3,13 +3,16 @@ package org.apache.plc4x;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.annotation.lifecycle.OnEnabled;
-import org.apache.nifi.annotation.lifecycle.OnShutdown;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.controller.AbstractControllerService;
 import org.apache.nifi.controller.ConfigurationContext;
 import org.apache.nifi.controller.ControllerServiceInitializationContext;
 import org.apache.nifi.reporting.InitializationException;
+import org.apache.plc4x.java.api.PlcConnection;
+import org.apache.plc4x.java.api.exceptions.PlcConnectionException;
+import org.apache.plc4x.java.utils.cache.CachedPlcConnectionManager;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -19,10 +22,13 @@ public class PLCConnectionService extends AbstractControllerService implements M
     public static final PropertyDescriptor PLC_CONNECTION_STRING = new PropertyDescriptor.Builder()
         .name("PLC Connection string")
         .description("The connection string for the PLC.")
+/*        .addValidator(new Plc4xConnectionStringValidator())*/
         .required(true)
         .build();
 
     String connectionString;
+
+    public CachedPlcConnectionManager connectionManager;
     private static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS;
 
     static {
@@ -43,21 +49,28 @@ public class PLCConnectionService extends AbstractControllerService implements M
         }
     }
 
-
-
-    @Override
-    public void execute() throws ExecutionException {
-
+    protected void refreshConnectionManager() {
+        connectionManager = CachedPlcConnectionManager.getBuilder()
+            .withMaxLeaseTime(Duration.ofSeconds(1000L))
+            .withMaxWaitTime(Duration.ofSeconds(500L))
+            .build();
     }
 
     @OnEnabled
     public void onConfigured(final ConfigurationContext context) throws InitializationException{
         connectionString = context.getProperty(PLC_CONNECTION_STRING).getValue();
+        refreshConnectionManager();
     }
 
     @Override
-    public String getProperty(){
-        return connectionString;
+    public PlcConnection getConnection()  {
+        PlcConnection plcConnection;
+        try {
+            plcConnection = connectionManager.getConnection(String.valueOf(PLC_CONNECTION_STRING));
+        } catch (PlcConnectionException e) {
+            throw new RuntimeException(e);
+        }
+        return plcConnection;
     }
 }
 

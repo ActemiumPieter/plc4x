@@ -3,6 +3,7 @@ package org.apache.plc4x;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.controller.ControllerService;
+import org.apache.plc4x.java.api.PlcConnection;
 
 import java.util.concurrent.ExecutionException;
 
@@ -11,8 +12,5 @@ import java.util.concurrent.ExecutionException;
 @CapabilityDescription("Example Service API.")
 public interface MyService extends ControllerService {
 
-
-    public void execute() throws ExecutionException;
-
-    String getProperty();
+    PlcConnection getConnection()throws ExecutionException, InterruptedException;
 }

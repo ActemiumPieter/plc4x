@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/apache-calcite/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-calcite/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-kafka/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-kafka/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api-nar/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api-nar/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-nar/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service-nar/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/nifi-plc4x-controller-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-controller-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-nar/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-nar/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-processor/nifi-plc4x-processors/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-processor/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/plc4x-processor/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apache-nifi/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
