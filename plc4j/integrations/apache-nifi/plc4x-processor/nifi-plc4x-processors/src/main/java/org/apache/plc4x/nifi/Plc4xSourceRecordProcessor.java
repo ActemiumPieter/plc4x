@@ -132,9 +132,9 @@ public class Plc4xSourceRecordProcessor extends BasePlc4xProcessor {
 				PlcReadRequest readRequest;
 				Long nrOfRowsHere;
 
-				try (PlcConnection connection = getConnectionManager().getConnection(getConnectionString(context, originalFlowFile))) {
+				try (PlcConnection connection = plcConnection.getConnection()) {
 					
-					readRequest =  getReadRequest(logger, addressMap, tags, connection);
+					readRequest =  getReadRequest(logger, addressMap, tags);
 					
 					PlcReadResponse readResponse = readRequest.execute().get(getTimeout(context, originalFlowFile), TimeUnit.MILLISECONDS);
 							
@@ -142,6 +142,7 @@ public class Plc4xSourceRecordProcessor extends BasePlc4xProcessor {
 
 				} catch (TimeoutException e) {
 					logger.error("Timeout reading the data from PLC", e);
+                    PlcConnection connection = plcConnection.getConnection();
 					getConnectionManager().removeCachedConnection(getConnectionString(context, originalFlowFile));
 					throw new ProcessException(e);
 				} catch (PlcConnectionException e) {

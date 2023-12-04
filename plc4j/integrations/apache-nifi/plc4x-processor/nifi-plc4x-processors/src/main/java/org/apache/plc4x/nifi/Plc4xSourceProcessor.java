@@ -33,7 +33,6 @@ import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
 import org.apache.nifi.processor.exception.ProcessException;
-import org.apache.plc4x.MyService;
 import org.apache.plc4x.java.api.PlcConnection;
 import org.apache.plc4x.java.api.messages.PlcReadRequest;
 import org.apache.plc4x.java.api.messages.PlcReadResponse;
@@ -64,7 +63,7 @@ public class Plc4xSourceProcessor extends BasePlc4xProcessor {
         final ComponentLog logger = getLogger();
         final FlowFile flowFile = session.create();
 
-        try(PlcConnection connection = getConnectionManager().getConnection(getConnectionString(context, incomingFlowFile))) {
+        try(PlcConnection connection = plcConnection.getConnection()) {
 
             if (!connection.getMetadata().canRead()) {
                 throw new ProcessException("Reading not supported by connection");
@@ -74,7 +73,7 @@ public class Plc4xSourceProcessor extends BasePlc4xProcessor {
             final Map<String, PlcTag> tags = getSchemaCache().retrieveTags(addressMap);
 
 
-            PlcReadRequest readRequest = getReadRequest(logger, addressMap, tags, connection);
+            PlcReadRequest readRequest = getReadRequest(logger, addressMap, tags);
 
             try {
                 final PlcReadResponse response = readRequest.execute().get(getTimeout(context, incomingFlowFile), TimeUnit.MILLISECONDS);

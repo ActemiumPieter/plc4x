@@ -60,7 +60,7 @@ public class Plc4xSinkProcessor extends BasePlc4xProcessor {
 
         final ComponentLog logger = getLogger();
 
-        try(PlcConnection connection = getConnectionManager().getConnection(getConnectionString(context, flowFile))) {
+        try(PlcConnection connection = plcConnection.getConnection()) {
             if (!connection.getMetadata().canWrite()) {
                 throw new ProcessException("Writing not supported by connection");
             }
@@ -68,7 +68,7 @@ public class Plc4xSinkProcessor extends BasePlc4xProcessor {
             final Map<String,String> addressMap = getPlcAddressMap(context, flowFile);
             final Map<String, PlcTag> tags = getSchemaCache().retrieveTags(addressMap);
 
-            PlcWriteRequest writeRequest = getWriteRequest(logger, addressMap, tags, flowFile.getAttributes(), connection, null);
+            PlcWriteRequest writeRequest = getWriteRequest(logger, addressMap, tags, flowFile.getAttributes(), null);
 
             try {
                 final PlcWriteResponse plcWriteResponse = writeRequest.execute().get(getTimeout(context, flowFile), TimeUnit.MILLISECONDS);

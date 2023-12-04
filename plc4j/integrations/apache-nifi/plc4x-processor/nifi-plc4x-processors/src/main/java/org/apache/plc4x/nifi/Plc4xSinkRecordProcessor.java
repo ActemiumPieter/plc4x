@@ -126,9 +126,9 @@ public class Plc4xSinkRecordProcessor extends BasePlc4xProcessor {
 						final Map<String,String> addressMap = getPlcAddressMap(context, fileToProcess);
 						final Map<String, PlcTag> tags = getSchemaCache().retrieveTags(addressMap);
 
-						try (PlcConnection connection = getConnectionManager().getConnection(getConnectionString(context, fileToProcess))) {
+						try (PlcConnection connection = plcConnection.getConnection()) {
 							
-							writeRequest = getWriteRequest(logger, addressMap, tags, record.toMap(), connection, nrOfRowsHere);
+							writeRequest = getWriteRequest(logger, addressMap, tags, record.toMap(), nrOfRowsHere);
 
 							PlcWriteResponse plcWriteResponse = writeRequest.execute().get(getTimeout(context, fileToProcess), TimeUnit.MILLISECONDS);
 

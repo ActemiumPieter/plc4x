@@ -13,4 +13,6 @@ import java.util.concurrent.ExecutionException;
 public interface MyService extends ControllerService {
 
     PlcConnection getConnection()throws ExecutionException, InterruptedException;
+
+    public String getPlc4xConnecionString();
 }

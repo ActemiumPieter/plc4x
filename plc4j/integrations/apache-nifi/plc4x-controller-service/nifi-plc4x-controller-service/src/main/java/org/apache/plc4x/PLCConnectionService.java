@@ -14,7 +14,7 @@ import org.apache.plc4x.java.utils.cache.CachedPlcConnectionManager;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
 
 @Tags({"plc4x"})
 @CapabilityDescription("Custom NiFi controller service for managing the connection to a PLC")
@@ -22,11 +22,15 @@ public class PLCConnectionService extends AbstractControllerService implements M
     public static final PropertyDescriptor PLC_CONNECTION_STRING = new PropertyDescriptor.Builder()
         .name("PLC Connection string")
         .description("The connection string for the PLC.")
-/*        .addValidator(new Plc4xConnectionStringValidator())*/
+        .addValidator(new Plc4xConnectionStringValidator())
         .required(true)
         .build();
 
     String connectionString;
+
+    protected CachedPlcConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
 
     public CachedPlcConnectionManager connectionManager;
     private static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS;
@@ -72,5 +76,11 @@ public class PLCConnectionService extends AbstractControllerService implements M
         }
         return plcConnection;
     }
+
+    @Override
+    public String getPlc4xConnecionString() {
+        return connectionString;
+    }
+
 }
 

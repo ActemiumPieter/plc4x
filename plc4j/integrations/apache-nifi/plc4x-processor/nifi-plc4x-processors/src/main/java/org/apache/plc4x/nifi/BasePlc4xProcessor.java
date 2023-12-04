@@ -87,7 +87,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
             .build();
     }
 
-    public static final PropertyDescriptor PLC_CONNECTION_SERVICE = new PropertyDescriptor.Builder().name("OPC UA Connection Service").description("Specifies the OPC UA Connection Service to use for managing the OPC UA connection.").required(true).identifiesControllerService(MyService.class).build();
+    public static final PropertyDescriptor PLC_CONNECTION_SERVICE = new PropertyDescriptor.Builder().name("PLC Connection Service").description("Specifies the PLC Connection Service to use for managing the PLC connection.").required(true).identifiesControllerService(MyService.class).build();
 
     public static final PropertyDescriptor MY_SERVICE = new PropertyDescriptor
         .Builder().name("My Service")
@@ -177,7 +177,6 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
 
     public String getConnectionString(ProcessContext context, FlowFile flowFile) {
         return context.getProperty(PLC_CONNECTION_STRING).evaluateAttributeExpressions(flowFile).getValue();
-
     }
 
     public Long getTimeout(ProcessContext context, FlowFile flowFile) {
@@ -215,7 +214,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
                 .build();
     }
 
-    private PLCConnectionService plcConnection;
+    protected PLCConnectionService plcConnection;
     @OnScheduled
     public void onScheduled(final ProcessContext context) {
         Integer newCacheSize = context.getProperty(PLC_SCHEMA_CACHE_SIZE).evaluateAttributeExpressions().asInteger();
@@ -254,8 +253,9 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
 
     protected PlcWriteRequest getWriteRequest(final ComponentLog logger,
             final Map<String, String> addressMap, final Map<String, PlcTag> tags, final Map<String, ? extends Object> presentTags,
-            final PlcConnection connection, final AtomicLong nrOfRowsHere) {
+             final AtomicLong nrOfRowsHere) {
 
+        PlcConnection connection = plcConnection.getConnection();
         PlcWriteRequest.Builder builder = connection.writeRequestBuilder();
 
         if (tags != null){
@@ -287,8 +287,10 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     }
 
     protected PlcReadRequest getReadRequest(final ComponentLog logger, 
-            final Map<String, String> addressMap, final Map<String, PlcTag> tags,
-            final PlcConnection connection) {
+            final Map<String, String> addressMap, final Map<String, PlcTag> tags
+            ) {
+
+        PlcConnection connection = plcConnection.getConnection();
 
         PlcReadRequest.Builder builder = connection.readRequestBuilder();
 
