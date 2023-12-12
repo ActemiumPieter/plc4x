@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.apache.nifi.components.AllowableValue;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.ValidationContext;
@@ -29,6 +30,8 @@ import org.apache.nifi.components.ValidationResult;
 import org.apache.nifi.components.Validator;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.processor.ProcessContext;
+import org.apache.plc4x.MyService;
+import org.apache.plc4x.PLCConnectionService;
 import org.apache.plc4x.java.DefaultPlcDriverManager;
 import org.apache.plc4x.java.api.PlcDriver;
 import org.apache.plc4x.nifi.BasePlc4xProcessor;
@@ -38,7 +41,6 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
     private boolean isInitializated = false;
     private boolean isDynamic;
     protected Map<String,String> cachedAddresses = null;
-
     protected AllowableValue allowableValue;
     protected List<PropertyDescriptor> propertyDescriptors = new ArrayList<>();
 
@@ -49,7 +51,6 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
     public Map<String,String> extractAddressesFromResources(final ProcessContext context, final FlowFile flowFile) {
         throw new UnsupportedOperationException("Method 'extractAddressesFromResources' not implemented");
     }
-
 
     @Override
     public Map<String, String> extractAddresses(final ProcessContext context, final FlowFile flowFile) {
@@ -73,7 +74,6 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
     }
 
     public static class TagValidator implements Validator {
-        
         private DefaultPlcDriverManager manager;
 
         public TagValidator(DefaultPlcDriverManager manager) {
@@ -92,8 +92,7 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
 
         @Override
         public ValidationResult validate(String subject, String input, ValidationContext context) {
-            String connectionString = context.getProperty(BasePlc4xProcessor.PLC_CONNECTION_STRING).getValue();
-
+            String connectionString = null;
             if (context.isExpressionLanguageSupported(subject) && context.isExpressionLanguagePresent(input) || 
                 context.isExpressionLanguagePresent(connectionString)) {
                 return new ValidationResult.Builder().subject(subject).input(input)
@@ -120,5 +119,4 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
                 .build();
         }
     }
-    
 }

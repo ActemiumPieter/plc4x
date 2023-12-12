@@ -18,8 +18,10 @@
  */
 package org.apache.plc4x.nifi;
 
+import org.apache.nifi.reporting.InitializationException;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
+import org.apache.plc4x.PLCConnectionService;
 import org.apache.plc4x.nifi.address.AddressesAccessUtils;
 import org.apache.plc4x.nifi.address.FilePropertyAccessStrategy;
 import org.apache.plc4x.nifi.util.Plc4xCommonTest;
@@ -42,16 +44,25 @@ public class Plc4xSourceProcessorTest {
         testRunner.setIncomingConnection(false);
         testRunner.setValidateExpressionUsage(true);
 
-        testRunner.setVariable("url", "simulated://127.0.0.1");
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "${url}");
+
         testRunner.setProperty(Plc4xSourceProcessor.PLC_FUTURE_TIMEOUT_MILISECONDS, "1000");
 
         testRunner.addConnection(Plc4xSourceProcessor.REL_SUCCESS);
         testRunner.addConnection(Plc4xSourceProcessor.REL_FAILURE);
     }
 
-    public void testProcessor() {
+    @Test
+    public void testProcessor() throws InitializationException {
 
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
         testRunner.run(NUMBER_OF_CALLS);
         testRunner.assertTransferCount(Plc4xSourceProcessor.REL_FAILURE, 0);
         testRunner.assertTransferCount(Plc4xSourceProcessor.REL_SUCCESS, NUMBER_OF_CALLS);
@@ -59,7 +70,7 @@ public class Plc4xSourceProcessorTest {
 
     // Test dynamic properties addressess access strategy
     @Test
-    public void testWithAddressProperties() {
+    public void testWithAddressProperties() throws InitializationException {
         testRunner.setProperty(AddressesAccessUtils.PLC_ADDRESS_ACCESS_STRATEGY, AddressesAccessUtils.ADDRESS_PROPERTY);
         Plc4xCommonTest.getAddressMap().forEach((k,v) -> testRunner.setProperty(k, v));
         testProcessor();
@@ -67,7 +78,7 @@ public class Plc4xSourceProcessorTest {
 
     // Test addressess text property access strategy
     @Test
-    public void testWithAddressText() throws JsonProcessingException { 
+    public void testWithAddressText() throws JsonProcessingException, InitializationException {
         testRunner.setProperty(AddressesAccessUtils.PLC_ADDRESS_ACCESS_STRATEGY, AddressesAccessUtils.ADDRESS_TEXT);
         testRunner.setProperty(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY, new ObjectMapper().writeValueAsString(Plc4xCommonTest.getAddressMap()).toString());
         testProcessor();
@@ -75,7 +86,7 @@ public class Plc4xSourceProcessorTest {
 
     // Test addressess file property access strategy
     @Test
-    public void testWithAdderessFile() {
+    public void testWithAdderessFile() throws InitializationException {
         testRunner.setProperty(AddressesAccessUtils.ADDRESS_FILE_PROPERTY, "file");
 
         try (MockedStatic<FilePropertyAccessStrategy> staticMock = Mockito.mockStatic(FilePropertyAccessStrategy.class)) {

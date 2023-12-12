@@ -43,7 +43,6 @@ public class RecordPlc4xWriter implements Plc4xWriter {
     private final AtomicReference<WriteResult> writeResultRef;
     private final Map<String, String> originalAttributes;
     private String mimeType;
-
     private RecordSet fullRecordSet;
     private RecordSchema writeSchema;
 

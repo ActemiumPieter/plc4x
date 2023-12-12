@@ -24,6 +24,7 @@ import org.apache.nifi.avro.AvroReader;
 import org.apache.nifi.reporting.InitializationException;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
+import org.apache.plc4x.PLCConnectionService;
 import org.apache.plc4x.nifi.address.AddressesAccessUtils;
 import org.apache.plc4x.nifi.address.FilePropertyAccessStrategy;
 import org.apache.plc4x.nifi.util.Plc4xCommonTest;
@@ -48,7 +49,15 @@ public class Plc4xSinkRecordProcessorTest {
     	testRunner.setIncomingConnection(false);
     	testRunner.setValidateExpressionUsage(false);
 
-    	testRunner.setProperty(Plc4xSinkRecordProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
+
+
         testRunner.setProperty(Plc4xSinkRecordProcessor.PLC_FUTURE_TIMEOUT_MILISECONDS, "1000");
  
     	testRunner.addConnection(Plc4xSinkRecordProcessor.REL_SUCCESS);

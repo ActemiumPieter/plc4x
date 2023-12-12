@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -55,6 +56,7 @@ import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.serialization.RecordSetWriterFactory;
 import org.apache.nifi.serialization.record.RecordSchema;
 import org.apache.nifi.util.StopWatch;
+import org.apache.plc4x.java.api.exceptions.PlcConnectionException;
 import org.apache.plc4x.java.api.messages.PlcSubscriptionEvent;
 import org.apache.plc4x.java.api.model.PlcTag;
 import org.apache.plc4x.java.api.types.PlcValueType;
@@ -133,7 +135,7 @@ public class Plc4xListenRecordProcessor extends BasePlc4xProcessor {
 
     @Override
     @OnScheduled
-    public void onScheduled(final ProcessContext context) {
+    public void onScheduled(final ProcessContext context) throws ExecutionException, PlcConnectionException, InterruptedException {
 		super.onScheduled(context);
 		subscriptionType = Plc4xSubscriptionType.valueOf(context.getProperty(PLC_SUBSCRIPTION_TYPE).getValue());
         cyclingPollingInterval = context.getProperty(PLC_SUBSCRIPTION_CYCLIC_POLLING_INTERVAL).asLong();
@@ -149,7 +151,7 @@ public class Plc4xListenRecordProcessor extends BasePlc4xProcessor {
         dispatcher =  new Plc4xListenerDispatcher(getTimeout(context, null), subscriptionType, cyclingPollingInterval, getLogger(), events);
 		try {
 			addressMap = getPlcAddressMap(context, null);
-			dispatcher.open(getConnectionString(context, null), addressMap);
+			dispatcher.open(getConnectionString(), addressMap);
 		} catch (Exception e) {
 			if (debugEnabled) {
 				getLogger().debug("Error creating a the subscription event dispatcher");

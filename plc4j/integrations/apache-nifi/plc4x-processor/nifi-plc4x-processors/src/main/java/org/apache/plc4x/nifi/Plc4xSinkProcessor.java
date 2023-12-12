@@ -34,6 +34,7 @@ import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
 import org.apache.nifi.processor.exception.ProcessException;
+import org.apache.plc4x.PLCConnectionService;
 import org.apache.plc4x.java.api.PlcConnection;
 import org.apache.plc4x.java.api.messages.PlcWriteRequest;
 import org.apache.plc4x.java.api.messages.PlcWriteResponse;
@@ -60,7 +61,7 @@ public class Plc4xSinkProcessor extends BasePlc4xProcessor {
 
         final ComponentLog logger = getLogger();
 
-        try(PlcConnection connection = plcConnection.getConnection()) {
+        try(PlcConnection connection = plcConnectionService.getConnection()) {
             if (!connection.getMetadata().canWrite()) {
                 throw new ProcessException("Writing not supported by connection");
             }
@@ -68,7 +69,7 @@ public class Plc4xSinkProcessor extends BasePlc4xProcessor {
             final Map<String,String> addressMap = getPlcAddressMap(context, flowFile);
             final Map<String, PlcTag> tags = getSchemaCache().retrieveTags(addressMap);
 
-            PlcWriteRequest writeRequest = getWriteRequest(logger, addressMap, tags, flowFile.getAttributes(), null);
+            PlcWriteRequest writeRequest = getWriteRequest(logger, addressMap, tags, flowFile.getAttributes(), connection, null);
 
             try {
                 final PlcWriteResponse plcWriteResponse = writeRequest.execute().get(getTimeout(context, flowFile), TimeUnit.MILLISECONDS);
@@ -76,11 +77,11 @@ public class Plc4xSinkProcessor extends BasePlc4xProcessor {
                 evaluateWriteResponse(logger, flowFile.getAttributes(), plcWriteResponse);
  
             } catch (TimeoutException e) {
-                logger.error("Timeout writting the data to the PLC", e);
-                getConnectionManager().removeCachedConnection(getConnectionString(context, flowFile));
+                logger.error("Timeout writing the data to the PLC", e);
+                plcConnectionService.closeConnection();
                 throw new ProcessException(e);
             } catch (Exception e) {
-                logger.error("Exception writting the data to the PLC", e);
+                logger.error("Exception writing the data to the PLC", e);
                 throw (e instanceof ProcessException) ? (ProcessException) e : new ProcessException(e);
             }
 

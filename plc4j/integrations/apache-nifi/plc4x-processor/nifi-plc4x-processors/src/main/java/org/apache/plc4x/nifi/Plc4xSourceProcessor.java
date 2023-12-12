@@ -50,8 +50,6 @@ public class Plc4xSourceProcessor extends BasePlc4xProcessor {
     @Override
     public void onTrigger(final ProcessContext context, final ProcessSession session) throws ProcessException {
 
-
-        
         FlowFile incomingFlowFile = null;
         if (context.hasIncomingConnection()) {
             incomingFlowFile = session.get();
@@ -63,8 +61,7 @@ public class Plc4xSourceProcessor extends BasePlc4xProcessor {
         final ComponentLog logger = getLogger();
         final FlowFile flowFile = session.create();
 
-        try(PlcConnection connection = plcConnection.getConnection()) {
-
+        try(PlcConnection connection = plcConnectionService.getConnection()) {
             if (!connection.getMetadata().canRead()) {
                 throw new ProcessException("Reading not supported by connection");
             }
@@ -72,17 +69,14 @@ public class Plc4xSourceProcessor extends BasePlc4xProcessor {
             final Map<String,String> addressMap = getPlcAddressMap(context, incomingFlowFile);
             final Map<String, PlcTag> tags = getSchemaCache().retrieveTags(addressMap);
 
-
-            PlcReadRequest readRequest = getReadRequest(logger, addressMap, tags);
+            PlcReadRequest readRequest = getReadRequest(logger, addressMap, tags, connection);
 
             try {
                 final PlcReadResponse response = readRequest.execute().get(getTimeout(context, incomingFlowFile), TimeUnit.MILLISECONDS);
-                
                 evaluateReadResponse(session, flowFile, response);
-                
             } catch (TimeoutException e) {
                 logger.error("Timeout reading the data from PLC", e);
-                getConnectionManager().removeCachedConnection(getConnectionString(context, incomingFlowFile));
+                plcConnectionService.closeConnection();
                 throw new ProcessException(e);
             } catch (Exception e) {
                 logger.error("Exception reading the data from PLC", e);
@@ -116,5 +110,4 @@ public class Plc4xSourceProcessor extends BasePlc4xProcessor {
             throw (e instanceof ProcessException) ? (ProcessException) e : new ProcessException(e);
         }
     }
-    
 }

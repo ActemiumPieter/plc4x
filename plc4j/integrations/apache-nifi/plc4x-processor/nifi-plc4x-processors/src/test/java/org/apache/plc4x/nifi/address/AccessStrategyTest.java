@@ -74,7 +74,7 @@ public class AccessStrategyTest {
     @Test
     public void testDynamicPropertyAccessStrategyELPresent() {
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
         
         Plc4xCommonTest.getAddressMap().forEach((k,v) -> testRunner.setProperty(k, "${attribute}"));
 
@@ -129,7 +129,7 @@ public class AccessStrategyTest {
         TextPropertyAccessStrategy testObject = new TextPropertyAccessStrategy();
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
 
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
         
         assert testObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_TEXT);
         assert testObject.getPropertyDescriptors().contains(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY);
@@ -189,7 +189,7 @@ public class AccessStrategyTest {
 
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
 
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
         
         assert testFileObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_FILE);
         assert testFileObject.getPropertyDescriptors().contains(AddressesAccessUtils.ADDRESS_FILE_PROPERTY);

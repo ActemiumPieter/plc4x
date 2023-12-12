@@ -18,18 +18,6 @@
  */
 package org.apache.plc4x.nifi;
 
-import java.io.OutputStream;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.nifi.annotation.lifecycle.OnScheduled;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.ValidationContext;
@@ -38,29 +26,29 @@ import org.apache.nifi.components.Validator;
 import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.logging.ComponentLog;
-import org.apache.nifi.processor.AbstractProcessor;
-import org.apache.nifi.processor.ProcessContext;
-import org.apache.nifi.processor.ProcessSession;
-import org.apache.nifi.processor.ProcessorInitializationContext;
-import org.apache.nifi.processor.Relationship;
+import org.apache.nifi.processor.*;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.serialization.record.RecordSchema;
 import org.apache.plc4x.MyService;
-import org.apache.plc4x.PLCConnectionService;
 import org.apache.plc4x.java.api.PlcConnection;
+import org.apache.plc4x.java.api.exceptions.PlcConnectionException;
 import org.apache.plc4x.java.api.messages.PlcReadRequest;
 import org.apache.plc4x.java.api.messages.PlcReadResponse;
 import org.apache.plc4x.java.api.messages.PlcWriteRequest;
 import org.apache.plc4x.java.api.messages.PlcWriteResponse;
 import org.apache.plc4x.java.api.model.PlcTag;
 import org.apache.plc4x.java.api.types.PlcResponseCode;
-import org.apache.plc4x.java.utils.cache.CachedPlcConnectionManager;
 import org.apache.plc4x.nifi.address.AddressesAccessStrategy;
 import org.apache.plc4x.nifi.address.AddressesAccessUtils;
 import org.apache.plc4x.nifi.address.DynamicPropertyAccessStrategy;
 import org.apache.plc4x.nifi.record.Plc4xWriter;
 import org.apache.plc4x.nifi.record.SchemaCache;
+
+import java.io.OutputStream;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 
@@ -70,62 +58,29 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     protected Set<Relationship> relationships;
     protected volatile boolean debugEnabled;
     protected Integer cacheSize = 0;
-
     protected final SchemaCache schemaCache = new SchemaCache(0);
     protected AddressesAccessStrategy addressAccessStrategy;
-
-    private CachedPlcConnectionManager connectionManager;
-
-    protected CachedPlcConnectionManager getConnectionManager() {
-        return connectionManager;
-    }
-
-    protected void refreshConnectionManager() {
-        connectionManager = CachedPlcConnectionManager.getBuilder()
-            .withMaxLeaseTime(Duration.ofSeconds(1000L))
-            .withMaxWaitTime(Duration.ofSeconds(500L))
-            .build();
-    }
-
+    public MyService plcConnectionService;
     public static final PropertyDescriptor PLC_CONNECTION_SERVICE = new PropertyDescriptor.Builder().name("PLC Connection Service").description("Specifies the PLC Connection Service to use for managing the PLC connection.").required(true).identifiesControllerService(MyService.class).build();
-
-    public static final PropertyDescriptor MY_SERVICE = new PropertyDescriptor
-        .Builder().name("My Service")
-        .description("Example Controller Service Property")
-        .required(true)
-        .identifiesControllerService(MyService.class)
-        .build();
-
-
-
-    public static final PropertyDescriptor PLC_CONNECTION_STRING = new PropertyDescriptor.Builder()
-        .name("plc4x-connection-string")
-        .displayName("PLC connection String")
-        .description("PLC4X connection string used to connect to a given PLC device.")
-        .required(true)
-        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-/*        .addValidator(new Plc4xConnectionStringValidator())*/
-        .build();
-
     public static final PropertyDescriptor PLC_SCHEMA_CACHE_SIZE = new PropertyDescriptor.Builder()
         .name("plc4x-record-schema-cache-size")
         .displayName("Schema Cache Size")
-		.description("Maximum number of entries in the cache. Can improve performance when addresses change dynamically.")
-		.defaultValue("1")
-		.required(true)
+        .description("Maximum number of entries in the cache. Can improve performance when addresses change dynamically.")
+        .defaultValue("1")
+        .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-		.addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
-		.build();
+        .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
+        .build();
 
     public static final PropertyDescriptor PLC_FUTURE_TIMEOUT_MILISECONDS = new PropertyDescriptor.Builder()
-		.name("plc4x-request-timeout")
-		.displayName("Timeout (miliseconds)")
-		.description( "Request timeout in miliseconds")
-		.defaultValue("10000")
-		.required(true)
+        .name("plc4x-request-timeout")
+        .displayName("Timeout (miliseconds)")
+        .description("Request timeout in miliseconds")
+        .defaultValue("10000")
+        .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-		.addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
-		.build();
+        .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
+        .build();
 
     public static final PropertyDescriptor PLC_TIMESTAMP_FIELD_NAME = new PropertyDescriptor.Builder()
         .name("plc4x-timestamp-field-name")
@@ -139,10 +94,10 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
 
 
     protected static final Relationship REL_SUCCESS = new Relationship.Builder()
-	    .name("success")
-	    .description("Successfully processed")
-	    .build();
-    
+        .name("success")
+        .description("Successfully processed")
+        .build();
+
     protected static final Relationship REL_FAILURE = new Relationship.Builder()
         .name("failure")
         .description("An error occurred processing")
@@ -151,9 +106,8 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
 
     @Override
     protected void init(final ProcessorInitializationContext context) {
-    	final List<PropertyDescriptor> properties = new ArrayList<>();
-        properties.add(MY_SERVICE);
-/*    	properties.add(PLC_CONNECTION_STRING);*/
+        final List<PropertyDescriptor> properties = new ArrayList<>();
+        properties.add(PLC_CONNECTION_SERVICE);
         properties.add(AddressesAccessUtils.PLC_ADDRESS_ACCESS_STRATEGY);
         properties.add(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY);
         properties.add(AddressesAccessUtils.ADDRESS_FILE_PROPERTY);
@@ -162,21 +116,18 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
         properties.add(PLC_TIMESTAMP_FIELD_NAME);
         this.properties = Collections.unmodifiableList(properties);
 
-    	
-    	final Set<Relationship> relationships = new HashSet<>();
+        final Set<Relationship> relationships = new HashSet<>();
         relationships.add(REL_SUCCESS);
         relationships.add(REL_FAILURE);
         this.relationships = Collections.unmodifiableSet(relationships);
-
-
     }
 
     public Map<String, String> getPlcAddressMap(ProcessContext context, FlowFile flowFile) {
         return addressAccessStrategy.extractAddresses(context, flowFile);
     }
 
-    public String getConnectionString(ProcessContext context, FlowFile flowFile) {
-        return context.getProperty(PLC_CONNECTION_STRING).evaluateAttributeExpressions(flowFile).getValue();
+    public String getConnectionString() {
+        return plcConnectionService.getPlc4xConnecionString();
     }
 
     public Long getTimeout(ProcessContext context, FlowFile flowFile) {
@@ -190,8 +141,8 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     public SchemaCache getSchemaCache() {
         return schemaCache;
     }
-    
-	@Override
+
+    @Override
     public Set<Relationship> getRelationships() {
         return this.relationships;
     }
@@ -200,34 +151,33 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     public final List<PropertyDescriptor> getSupportedPropertyDescriptors() {
         return properties;
     }
-    
+
     @Override
     protected PropertyDescriptor getSupportedDynamicPropertyDescriptor(final String propertyDescriptorName) {
         return new PropertyDescriptor.Builder()
-                .name(propertyDescriptorName)
-                .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-                .addValidator(StandardValidators.ATTRIBUTE_KEY_PROPERTY_NAME_VALIDATOR)
-                .dependsOn(AddressesAccessUtils.PLC_ADDRESS_ACCESS_STRATEGY, AddressesAccessUtils.ADDRESS_PROPERTY)
-                .addValidator(new DynamicPropertyAccessStrategy.TagValidator(AddressesAccessUtils.getManager()))
-                .required(false)
-                .dynamic(true)
-                .build();
+            .name(propertyDescriptorName)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+            .addValidator(StandardValidators.ATTRIBUTE_KEY_PROPERTY_NAME_VALIDATOR)
+            .dependsOn(AddressesAccessUtils.PLC_ADDRESS_ACCESS_STRATEGY, AddressesAccessUtils.ADDRESS_PROPERTY)
+/*            .addValidator(new DynamicPropertyAccessStrategy.TagValidator(AddressesAccessUtils.getManager()))*/
+            .required(false)
+            .dynamic(true)
+            .build();
     }
 
-    protected PLCConnectionService plcConnection;
+
     @OnScheduled
-    public void onScheduled(final ProcessContext context) {
+    public void onScheduled(final ProcessContext context) throws ExecutionException, PlcConnectionException, InterruptedException {
         Integer newCacheSize = context.getProperty(PLC_SCHEMA_CACHE_SIZE).evaluateAttributeExpressions().asInteger();
-        if (!newCacheSize.equals(cacheSize)){
+        if (!newCacheSize.equals(cacheSize)) {
             schemaCache.restartCache(newCacheSize);
             cacheSize = newCacheSize;
         }
-        refreshConnectionManager();
         debugEnabled = getLogger().isDebugEnabled();
         addressAccessStrategy = AddressesAccessUtils.getAccessStrategy(context);
 
-        plcConnection = context.getProperty(PLC_CONNECTION_SERVICE).asControllerService(PLCConnectionService.class);
-
+        plcConnectionService = context.getProperty(PLC_CONNECTION_SERVICE).asControllerService(MyService.class);
+        plcConnectionService.refreshConnectionManager();
     }
 
     @Override
@@ -252,14 +202,14 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     }
 
     protected PlcWriteRequest getWriteRequest(final ComponentLog logger,
-            final Map<String, String> addressMap, final Map<String, PlcTag> tags, final Map<String, ? extends Object> presentTags,
-             final AtomicLong nrOfRowsHere) {
+                                              final Map<String, String> addressMap, final Map<String, PlcTag> tags, final Map<String, ? extends Object> presentTags, final PlcConnection connection,
+                                              final AtomicLong nrOfRowsHere) {
 
-        PlcConnection connection = plcConnection.getConnection();
+
         PlcWriteRequest.Builder builder = connection.writeRequestBuilder();
 
-        if (tags != null){
-            for (Map.Entry<String,PlcTag> tag : tags.entrySet()){
+        if (tags != null) {
+            for (Map.Entry<String, PlcTag> tag : tags.entrySet()) {
                 if (presentTags.containsKey(tag.getKey())) {
                     builder.addTag(tag.getKey(), tag.getValue(), presentTags.get(tag.getKey()));
                     if (nrOfRowsHere != null) {
@@ -273,7 +223,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
         } else {
             if (debugEnabled)
                 logger.debug("PlcTypes resolution not found in cache and will be added with key: " + addressMap);
-            for (Map.Entry<String,String> entry: addressMap.entrySet()){
+            for (Map.Entry<String, String> entry : addressMap.entrySet()) {
                 if (presentTags.containsKey(entry.getKey())) {
                     builder.addTagAddress(entry.getKey(), entry.getValue(), presentTags.get(entry.getKey()));
                     if (nrOfRowsHere != null) {
@@ -282,60 +232,59 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
                 }
             }
         }
-         
+
         return builder.build();
     }
 
-    protected PlcReadRequest getReadRequest(final ComponentLog logger, 
-            final Map<String, String> addressMap, final Map<String, PlcTag> tags
-            ) {
+    protected PlcReadRequest getReadRequest(final ComponentLog logger,
+                                            final Map<String, String> addressMap, final Map<String, PlcTag> tags,
+                                            final PlcConnection connection) {
 
-        PlcConnection connection = plcConnection.getConnection();
 
         PlcReadRequest.Builder builder = connection.readRequestBuilder();
 
-        if (tags != null){
-            for (Map.Entry<String,PlcTag> tag : tags.entrySet()){
+        if (tags != null) {
+            for (Map.Entry<String, PlcTag> tag : tags.entrySet()) {
                 builder.addTag(tag.getKey(), tag.getValue());
             }
         } else {
             if (debugEnabled)
                 logger.debug("Plc-Avro schema and PlcTypes resolution not found in cache and will be added with key: " + addressMap);
-            for (Map.Entry<String,String> entry: addressMap.entrySet()){
+            for (Map.Entry<String, String> entry : addressMap.entrySet()) {
                 builder.addTagAddress(entry.getKey(), entry.getValue());
             }
         }
         return builder.build();
-	}
+    }
 
     protected void evaluateWriteResponse(final ComponentLog logger, Map<String, ? extends Object> values, PlcWriteResponse plcWriteResponse) {
 
-		boolean codeErrorPresent = false;
-		List<String> tagsAtError = null;
+        boolean codeErrorPresent = false;
+        List<String> tagsAtError = null;
 
-		PlcResponseCode code = null;
+        PlcResponseCode code = null;
 
-		for (String tag : plcWriteResponse.getTagNames()) {
-			code = plcWriteResponse.getResponseCode(tag);
-			if (!code.equals(PlcResponseCode.OK)) {
-				if (tagsAtError == null) {
-					tagsAtError = new ArrayList<>();
-				}
-				logger.error("Not OK code when writing the data to PLC for tag " + tag 
-					+ " with value  " + values.get(tag).toString() 
-					+ " in addresss " + plcWriteResponse.getTag(tag).getAddressString());
-				
-			codeErrorPresent = true;
-			tagsAtError.add(tag);
-						
-			}
-		}
-		if (codeErrorPresent) {
-			throw new ProcessException("At least one error was found when while writting tags: " + tagsAtError.toString());
-		}
-	}
+        for (String tag : plcWriteResponse.getTagNames()) {
+            code = plcWriteResponse.getResponseCode(tag);
+            if (!code.equals(PlcResponseCode.OK)) {
+                if (tagsAtError == null) {
+                    tagsAtError = new ArrayList<>();
+                }
+                logger.error("Not OK code when writing the data to PLC for tag " + tag
+                    + " with value  " + values.get(tag).toString()
+                    + " in addresss " + plcWriteResponse.getTag(tag).getAddressString());
 
-   protected void evaluateReadResponse(final ProcessSession session, final FlowFile flowFile, final PlcReadResponse response) {
+                codeErrorPresent = true;
+                tagsAtError.add(tag);
+
+            }
+        }
+        if (codeErrorPresent) {
+            throw new ProcessException("At least one error was found when while writting tags: " + tagsAtError.toString());
+        }
+    }
+
+    protected void evaluateReadResponse(final ProcessSession session, final FlowFile flowFile, final PlcReadResponse response) {
         Map<String, String> attributes = new HashMap<>();
         for (String tagName : response.getTagNames()) {
             for (int i = 0; i < response.getNumberOfValues(tagName); i++) {
@@ -347,15 +296,14 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
     }
 
     protected long evaluateReadResponse(final ProcessContext context, final ComponentLog logger, final FlowFile originalFlowFile,
-			Plc4xWriter plc4xWriter, OutputStream out, final RecordSchema recordSchema, PlcReadResponse readResponse)
-			throws Exception {
+                                        Plc4xWriter plc4xWriter, OutputStream out, final RecordSchema recordSchema, PlcReadResponse readResponse)
+        throws Exception {
 
-		if(originalFlowFile == null) //there is no inherit attributes to use in writer service 
-			return plc4xWriter.writePlcReadResponse(readResponse, out, logger, null, recordSchema, getTimestampField(context));
-		else 
-			return plc4xWriter.writePlcReadResponse(readResponse, out, logger, null, recordSchema, originalFlowFile, getTimestampField(context));
-	}
-
+        if (originalFlowFile == null) //there is no inherit attributes to use in writer service
+            return plc4xWriter.writePlcReadResponse(readResponse, out, logger, null, recordSchema, getTimestampField(context));
+        else
+            return plc4xWriter.writePlcReadResponse(readResponse, out, logger, null, recordSchema, originalFlowFile, getTimestampField(context));
+    }
 
 
     protected static class Plc4xTimestampFieldValidator implements Validator {
@@ -365,7 +313,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
             if (context.isExpressionLanguageSupported(subject) && context.isExpressionLanguagePresent(input)) {
                 return new ValidationResult.Builder().subject(subject).input(input).explanation("Expression Language Present").valid(true).build();
             }
-            
+
             Map<String, String> allProperties = context.getAllProperties();
             allProperties.remove(subject);
 
@@ -373,7 +321,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
                 return new ValidationResult.Builder().subject(subject)
                     .explanation("Timestamp field must be unique")
                     .valid(false)
-                    .build(); 
+                    .build();
             }
             return new ValidationResult.Builder().subject(subject)
                 .explanation("")
