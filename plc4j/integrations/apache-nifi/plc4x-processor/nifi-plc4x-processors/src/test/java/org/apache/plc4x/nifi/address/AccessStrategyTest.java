@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.nifi.flowfile.FlowFile;
+import org.apache.nifi.reporting.InitializationException;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
+import org.apache.plc4x.PLCConnectionService;
 import org.apache.plc4x.nifi.Plc4xSourceProcessor;
 import org.apache.plc4x.nifi.util.Plc4xCommonTest;
 import org.junit.jupiter.api.Test;
@@ -72,8 +74,18 @@ public class AccessStrategyTest {
 
     // Tests that if EL is present in dynamic properties the processor is valid
     @Test
-    public void testDynamicPropertyAccessStrategyELPresent() {
+    public void testDynamicPropertyAccessStrategyELPresent() throws InitializationException {
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
+
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
         /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
         
         Plc4xCommonTest.getAddressMap().forEach((k,v) -> testRunner.setProperty(k, "${attribute}"));
@@ -124,10 +136,20 @@ public class AccessStrategyTest {
 
     // Tests that if EL is present in text property the processor is valid 
     @Test
-    public void testTextPropertyAccessStrategyELPresent() {
+    public void testTextPropertyAccessStrategyELPresent() throws InitializationException {
 
         TextPropertyAccessStrategy testObject = new TextPropertyAccessStrategy();
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
+
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
 
         /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
         
@@ -185,9 +207,19 @@ public class AccessStrategyTest {
 
     // Tests that if EL is present in file the processor is valid 
     @Test
-    public void testFilePropertyAccessStrategyELPresent() throws IOException {
+    public void testFilePropertyAccessStrategyELPresent() throws IOException, InitializationException {
 
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
+
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
 
         /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
         

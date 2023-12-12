@@ -31,6 +31,7 @@ import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.serialization.record.RecordSchema;
 import org.apache.plc4x.MyService;
+import org.apache.plc4x.java.DefaultPlcDriverManager;
 import org.apache.plc4x.java.api.PlcConnection;
 import org.apache.plc4x.java.api.exceptions.PlcConnectionException;
 import org.apache.plc4x.java.api.messages.PlcReadRequest;
@@ -41,6 +42,7 @@ import org.apache.plc4x.java.api.model.PlcTag;
 import org.apache.plc4x.java.api.types.PlcResponseCode;
 import org.apache.plc4x.nifi.address.AddressesAccessStrategy;
 import org.apache.plc4x.nifi.address.AddressesAccessUtils;
+import org.apache.plc4x.nifi.address.BaseAccessStrategy;
 import org.apache.plc4x.nifi.address.DynamicPropertyAccessStrategy;
 import org.apache.plc4x.nifi.record.Plc4xWriter;
 import org.apache.plc4x.nifi.record.SchemaCache;
@@ -159,7 +161,8 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.ATTRIBUTE_KEY_PROPERTY_NAME_VALIDATOR)
             .dependsOn(AddressesAccessUtils.PLC_ADDRESS_ACCESS_STRATEGY, AddressesAccessUtils.ADDRESS_PROPERTY)
-/*            .addValidator(new DynamicPropertyAccessStrategy.TagValidator(AddressesAccessUtils.getManager()))*/
+            .dependsOn(PLC_CONNECTION_SERVICE)
+            .addValidator(new DynamicPropertyAccessStrategy.TagValidator(AddressesAccessUtils.getManager()))
             .required(false)
             .dynamic(true)
             .build();
@@ -178,6 +181,7 @@ public abstract class BasePlc4xProcessor extends AbstractProcessor {
 
         plcConnectionService = context.getProperty(PLC_CONNECTION_SERVICE).asControllerService(MyService.class);
         plcConnectionService.refreshConnectionManager();
+
     }
 
     @Override

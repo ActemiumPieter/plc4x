@@ -28,6 +28,7 @@ import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.ValidationContext;
 import org.apache.nifi.components.ValidationResult;
 import org.apache.nifi.components.Validator;
+import org.apache.nifi.controller.ControllerService;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.plc4x.MyService;
@@ -74,12 +75,11 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
     }
 
     public static class TagValidator implements Validator {
-        private DefaultPlcDriverManager manager;
+        private final DefaultPlcDriverManager manager;
 
         public TagValidator(DefaultPlcDriverManager manager) {
             this.manager = manager;
         }
-
         protected void checkTags(PlcDriver driver, Collection<String> tags) {
             for (String tag : tags) {
                 driver.prepareTag(tag);
@@ -88,11 +88,12 @@ public abstract class BaseAccessStrategy implements AddressesAccessStrategy{
 
         protected Collection<String> getTags(String input) throws Exception {
             throw new UnsupportedOperationException("Method 'getTags' not implemented");
-        } 
+        }
 
         @Override
         public ValidationResult validate(String subject, String input, ValidationContext context) {
-            String connectionString = null;
+            MyService plcConnectionService = context.getProperty(BasePlc4xProcessor.PLC_CONNECTION_SERVICE).asControllerService(MyService.class);
+            String connectionString = plcConnectionService.getPlc4xConnecionString();
             if (context.isExpressionLanguageSupported(subject) && context.isExpressionLanguagePresent(input) || 
                 context.isExpressionLanguagePresent(connectionString)) {
                 return new ValidationResult.Builder().subject(subject).input(input)
