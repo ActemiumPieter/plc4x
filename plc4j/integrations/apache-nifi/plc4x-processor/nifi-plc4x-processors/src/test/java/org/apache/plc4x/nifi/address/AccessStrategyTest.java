@@ -44,10 +44,18 @@ public class AccessStrategyTest {
 
     // Tests that addresses in dynamic properties are read correctly and addresses are cached if no EL is used
     @Test
-    public void testDynamicPropertyAccessStrategy() {
+    public void testDynamicPropertyAccessStrategy() throws InitializationException {
 
         DynamicPropertyAccessStrategy testObject = new DynamicPropertyAccessStrategy();
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
+
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
         
         assert testObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_PROPERTY);
         assert testObject.getPropertyDescriptors().isEmpty();
@@ -64,9 +72,17 @@ public class AccessStrategyTest {
 
     // Tests incorrect address detection on dynamic properties
     @Test
-    public void testDynamicPropertyAccessStrategyIncorrect() {
+    public void testDynamicPropertyAccessStrategyIncorrect() throws InitializationException {
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
-        
+
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
+
         Plc4xCommonTest.getAddressMap().forEach((k,v) -> testRunner.setProperty(k, "no an correct address"));
 
         testRunner.assertNotValid();
@@ -78,16 +94,14 @@ public class AccessStrategyTest {
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
 
         final PLCConnectionService plcConnectionService = new PLCConnectionService();
-        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
         testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
         testRunner.enableControllerService(plcConnectionService);
         testRunner.assertValid(plcConnectionService);
 
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
 
 
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
-        /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
-        
         Plc4xCommonTest.getAddressMap().forEach((k,v) -> testRunner.setProperty(k, "${attribute}"));
 
         testRunner.assertValid();
@@ -95,13 +109,21 @@ public class AccessStrategyTest {
 
     // Tests that addresses in text property are read correctly and addresses are cached if no EL is used
     @Test
-    public void testTextPropertyAccessStrategy() throws JsonProcessingException {
+    public void testTextPropertyAccessStrategy() throws JsonProcessingException, InitializationException {
 
         TextPropertyAccessStrategy testObject = new TextPropertyAccessStrategy();
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
         
         assert testObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_TEXT);
         assert testObject.getPropertyDescriptors().contains(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY);
+
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
         
         testRunner.setProperty(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY, new ObjectMapper().writeValueAsString(Plc4xCommonTest.getAddressMap()).toString());
 		
@@ -113,17 +135,24 @@ public class AccessStrategyTest {
         assertTrue(testObject.getCachedAddresses().equals(Plc4xCommonTest.getAddressMap()));
     }
 
-    
 
     // Tests incorrect address detection on text property
     @Test
-    public void testTextPropertyAccessStrategyIncorrect() {
+    public void testTextPropertyAccessStrategyIncorrect() throws InitializationException {
 
         TextPropertyAccessStrategy testObject = new TextPropertyAccessStrategy();
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
         
         assert testObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_TEXT);
         assert testObject.getPropertyDescriptors().contains(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY);
+
+        final PLCConnectionService plcConnectionService = new PLCConnectionService();
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
+        testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
+        testRunner.enableControllerService(plcConnectionService);
+        testRunner.assertValid(plcConnectionService);
+
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
         
         Plc4xCommonTest.getAddressMap().forEach((k,v) -> testRunner.setProperty(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY.getName(), "no an correct address"));
 
@@ -142,16 +171,12 @@ public class AccessStrategyTest {
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
 
         final PLCConnectionService plcConnectionService = new PLCConnectionService();
-        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
         testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
         testRunner.enableControllerService(plcConnectionService);
         testRunner.assertValid(plcConnectionService);
 
-
-
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
-
-        /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
         
         assert testObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_TEXT);
         assert testObject.getPropertyDescriptors().contains(AddressesAccessUtils.ADDRESS_TEXT_PROPERTY);
@@ -170,13 +195,11 @@ public class AccessStrategyTest {
         assert testFileObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_FILE);
         assert testFileObject.getPropertyDescriptors().contains(AddressesAccessUtils.ADDRESS_FILE_PROPERTY);
 
-
         testRunner.setProperty(AddressesAccessUtils.ADDRESS_FILE_PROPERTY, "file");
 
         try (MockedStatic<FilePropertyAccessStrategy> staticMock = Mockito.mockStatic(FilePropertyAccessStrategy.class)) {
             staticMock.when(() -> FilePropertyAccessStrategy.extractAddressesFromFile("file"))
                 .thenReturn(Plc4xCommonTest.getAddressMap());
-
 
             FlowFile flowFile = testRunner.enqueue("");
             Map<String, String> values = testFileObject.extractAddresses(testRunner.getProcessContext(), flowFile);
@@ -212,17 +235,13 @@ public class AccessStrategyTest {
         testRunner = TestRunners.newTestRunner(Plc4xSourceProcessor.class);
 
         final PLCConnectionService plcConnectionService = new PLCConnectionService();
-        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
         testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
         testRunner.enableControllerService(plcConnectionService);
         testRunner.assertValid(plcConnectionService);
 
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
 
-
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
-
-        /*testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_STRING, "simulated://127.0.0.1");*/
-        
         assert testFileObject.getAllowableValue().equals(AddressesAccessUtils.ADDRESS_FILE);
         assert testFileObject.getPropertyDescriptors().contains(AddressesAccessUtils.ADDRESS_FILE_PROPERTY);
         

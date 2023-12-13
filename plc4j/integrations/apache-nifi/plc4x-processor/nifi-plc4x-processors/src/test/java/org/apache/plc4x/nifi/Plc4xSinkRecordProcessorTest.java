@@ -50,12 +50,12 @@ public class Plc4xSinkRecordProcessorTest {
     	testRunner.setValidateExpressionUsage(false);
 
         final PLCConnectionService plcConnectionService = new PLCConnectionService();
-        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
         testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
         testRunner.enableControllerService(plcConnectionService);
         testRunner.assertValid(plcConnectionService);
 
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
 
 
         testRunner.setProperty(Plc4xSinkRecordProcessor.PLC_FUTURE_TIMEOUT_MILISECONDS, "1000");

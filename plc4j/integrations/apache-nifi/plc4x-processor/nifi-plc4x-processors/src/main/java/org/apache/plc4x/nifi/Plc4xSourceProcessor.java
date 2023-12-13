@@ -44,9 +44,7 @@ import org.apache.plc4x.java.api.model.PlcTag;
 @CapabilityDescription("Processor able to read data from industrial PLCs using Apache PLC4X")
 @WritesAttributes({@WritesAttribute(attribute="value", description="some value")})
 public class Plc4xSourceProcessor extends BasePlc4xProcessor {
-
 	public static final String EXCEPTION = "plc4x.read.exception";
-
     @Override
     public void onTrigger(final ProcessContext context, final ProcessSession session) throws ProcessException {
 
@@ -83,12 +81,11 @@ public class Plc4xSourceProcessor extends BasePlc4xProcessor {
                 throw (e instanceof ProcessException) ? (ProcessException) e : new ProcessException(e);
             }
 
-            
             if (incomingFlowFile != null) {
                 session.remove(incomingFlowFile);
             }
             session.transfer(flowFile, REL_SUCCESS);
-                
+
             if (tags == null){
                 if (debugEnabled)
                     logger.debug("Adding PlcTypes resolution into cache with key: " + addressMap);

@@ -102,10 +102,8 @@ public class Plc4xSourceRecordProcessor extends BasePlc4xProcessor {
 				return;
 			}
 		}
-
 		final ComponentLog logger = getLogger();
-		
-		
+
 		// Get an instance of a component able to read from a PLC.
 		final AtomicLong nrOfRows = new AtomicLong(0L);
 		final StopWatch executeTime = new StopWatch(true);

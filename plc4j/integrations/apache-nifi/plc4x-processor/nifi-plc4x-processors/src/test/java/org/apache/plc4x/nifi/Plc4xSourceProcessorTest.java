@@ -51,18 +51,17 @@ public class Plc4xSourceProcessorTest {
         testRunner.addConnection(Plc4xSourceProcessor.REL_FAILURE);
     }
 
-    @Test
     public void testProcessor() throws InitializationException {
 
         final PLCConnectionService plcConnectionService = new PLCConnectionService();
-        testRunner.addControllerService("test", plcConnectionService);
+        testRunner.addControllerService("PlcConnectionService", plcConnectionService);
         testRunner.setProperty(plcConnectionService, PLCConnectionService.PLC_CONNECTION_STRING, "simulated://127.0.0.1");
         testRunner.enableControllerService(plcConnectionService);
         testRunner.assertValid(plcConnectionService);
 
 
 
-        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "test");
+        testRunner.setProperty(Plc4xSourceProcessor.PLC_CONNECTION_SERVICE, "PlcConnectionService");
         testRunner.run(NUMBER_OF_CALLS);
         testRunner.assertTransferCount(Plc4xSourceProcessor.REL_FAILURE, 0);
         testRunner.assertTransferCount(Plc4xSourceProcessor.REL_SUCCESS, NUMBER_OF_CALLS);
